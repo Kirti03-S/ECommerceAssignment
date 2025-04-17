@@ -1,5 +1,6 @@
 ﻿using ECommerceWeb.Models;
 using Microsoft.EntityFrameworkCore;
+using OrderInvoiceSystem.Models;
 
 namespace ECommerceWeb.Data
 {
@@ -10,6 +11,7 @@ namespace ECommerceWeb.Data
             
         }
         public DbSet<Category> Categories{ get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
