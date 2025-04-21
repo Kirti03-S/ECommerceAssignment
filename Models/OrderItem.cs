@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-namespace OrderInvoiceSystem.Models
-{
+using OrderInvoiceSystem.Models;
+
     public class OrderItem
     {
         public int Id { get; set; }
@@ -11,7 +11,7 @@ namespace OrderInvoiceSystem.Models
 
 
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        
         public int Quantity { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
@@ -21,4 +21,4 @@ namespace OrderInvoiceSystem.Models
         [NotMapped]
         public decimal Total => Quantity * UnitPrice;
     }
-}
+

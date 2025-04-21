@@ -69,27 +69,28 @@ namespace YourApp.Controllers
                 return View();
             }
 
-            // 1) Create the user’s claims
+            // 1) Create the user's claims
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.CustomerName),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.CustomerName),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
 
-            // 2) Create identity & principal
+            // 2) Create identity and principal (this is the part you were missing!)
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+            var principal = new ClaimsPrincipal(identity); // ← this must be declared before using
 
-            // 3) Sign in (issue the cookie)
+            // 3) Sign in using cookie auth
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            // 4) Redirect to where they wanted to go (or home)
+            // 4) Redirect to home or returnUrl
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl!);
+                return Redirect(returnUrl);
 
             return RedirectToAction("Index", "Home");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Logout()
@@ -99,3 +100,4 @@ namespace YourApp.Controllers
         }
     }
 }
+
