@@ -10,5 +10,7 @@
         public string? Phone { get; set; }
         public string? BillingAddress { get; set; }
         public List<Order>? Orders { get; set; }
+
+        public string Role { get; set; } = "User";
     }
 }

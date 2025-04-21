@@ -19,38 +19,41 @@ namespace YourApp.Controllers
 
         [HttpGet]
         public IActionResult Register() => View();
-
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel customer)
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(Customer customer)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Username & password required");
-                return View();
+                // Check if the email already exists
+                var existingCustomer = _db.Customers.FirstOrDefault(c => c.Email == customer.Email);
+                if (existingCustomer != null)
+                {
+                    ModelState.AddModelError("Email", "Email already registered.");
+                    return View(customer);
+                }
+
+                // Hash password (use your own hash logic or plain for now)
+                string hash = customer.Password; // Ideally hash it
+
+                // ✅ Save new customer to DB with Role
+                _db.Customers.Add(new Customer
+                {
+                    CustomerName = customer.CustomerName,
+                    Email = customer.Email,
+                    Password = hash,
+                    Role = "User" // Change to "Admin" manually if needed
+                });
+
+                _db.SaveChanges();
+
+                TempData["success"] = "Registration successful! Please login.";
+                return RedirectToAction("Login");
             }
 
-            // 1) Check if user exists
-            if (_db.Customers.Any(u => u.Email == customer.Email))
-            {
-                ModelState.AddModelError("", "Email taken");
-                return View();
-            }
-
-            // 2) Hash the password
-            string hash = BCrypt.Net.BCrypt.HashPassword(customer.Password);
-
-            // 3) Save user
-            _db.Customers.Add(new Customer
-            {
-                CustomerName = customer.CustomerName,
-                Email = customer.Email,
-                Password = hash
-            });
-            await _db.SaveChangesAsync();
-
-            // 4) Redirect to Login
-            return RedirectToAction("Login");
+            return View(customer);
         }
+
 
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
@@ -60,6 +63,8 @@ namespace YourApp.Controllers
         }
 
         [HttpPost]
+
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel customer, string? returnUrl = null)
         {
             var user = _db.Customers.SingleOrDefault(u => u.Email == customer.Email);
@@ -74,7 +79,8 @@ namespace YourApp.Controllers
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name, user.CustomerName),
-        new Claim(ClaimTypes.Email, user.Email)
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, user.Role)
     };
 
             // 2) Create identity and principal (this is the part you were missing!)
