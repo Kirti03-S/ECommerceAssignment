@@ -1,4 +1,6 @@
-﻿namespace OrderInvoiceSystem.Models
+﻿using ECommerceWeb.Models;
+
+namespace OrderInvoiceSystem.Models
 {
     public class Customer
     {
@@ -9,7 +11,7 @@
         public string Password { get; set; }
         public string? Phone { get; set; }
         public string? BillingAddress { get; set; }
-        public List<Order>? Orders { get; set; }
+        public List<Order>? Order { get; set; }
 
         public string Role { get; set; } = "User";
     }

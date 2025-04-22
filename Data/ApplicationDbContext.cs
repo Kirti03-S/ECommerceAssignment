@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderInvoiceSystem.Models;
 
+
 namespace ECommerceWeb.Data
 {
     public class ApplicationDbContext:DbContext
@@ -15,6 +16,7 @@ namespace ECommerceWeb.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

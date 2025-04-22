@@ -5,6 +5,8 @@ using ECommerceWeb.Models;
 using ECommerceWeb.Data;
 using ECommerceWeb.Helpers;
 using OrderInvoiceSystem.Models;
+using Microsoft.EntityFrameworkCore;
+using OrderInvoiceSystem.Models;
 
 [Authorize]
 public class OrderController : Controller
@@ -15,7 +17,18 @@ public class OrderController : Controller
     {
         _db = db;
     }
-    [HttpPost]
+    public IActionResult MyOrders()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var orders = _db.Orders
+            .Where(o => o.UserId == userId)
+            .Include(o => o.Items)
+            .ThenInclude(i => i.Product)
+            .ToList();
+
+        return View(orders);
+    }
     public IActionResult PlaceOrder()
     {
         var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
@@ -32,7 +45,8 @@ public class OrderController : Controller
             Items = cart.Select(c => new OrderItem
             {
                 ProductId = c.ProductId, // Fixed: Use ProductId directly from CartItem
-                Quantity = c.Quantity
+                Quantity = c.Quantity,
+                Price = c.Price 
             }).ToList()
         };
 
@@ -40,8 +54,11 @@ public class OrderController : Controller
         _db.SaveChanges();
 
         HttpContext.Session.Remove("Cart");
+        return RedirectToAction("MyOrders", "Order");
 
         TempData["success"] = "Order placed successfully!";
+
+        
         return RedirectToAction("Index", "Home");
     }
 }
