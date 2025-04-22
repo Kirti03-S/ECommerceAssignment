@@ -1,0 +1,47 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using ECommerceWeb.Models;
+using ECommerceWeb.Data;
+using ECommerceWeb.Helpers;
+using OrderInvoiceSystem.Models;
+
+[Authorize]
+public class OrderController : Controller
+{
+    private readonly ApplicationDbContext _db;
+
+    public OrderController(ApplicationDbContext db)
+    {
+        _db = db;
+    }
+    [HttpPost]
+    public IActionResult PlaceOrder()
+    {
+        var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
+        if (cart == null || !cart.Any())
+        {
+            return RedirectToAction("Index", "Product");
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var order = new Order
+        {
+            UserId = userId,
+            Items = cart.Select(c => new OrderItem
+            {
+                ProductId = c.ProductId, // Fixed: Use ProductId directly from CartItem
+                Quantity = c.Quantity
+            }).ToList()
+        };
+
+        _db.Orders.Add(order);
+        _db.SaveChanges();
+
+        HttpContext.Session.Remove("Cart");
+
+        TempData["success"] = "Order placed successfully!";
+        return RedirectToAction("Index", "Home");
+    }
+}

@@ -179,3 +179,6 @@ C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\Mi
 C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\System.Security.Cryptography.Xml.dll
 C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
+C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\Coditas-Admin\Desktop\asp\ECommerceWeb\ECommerceWeb\bin\Debug\net8.0\StackExchange.Redis.dll

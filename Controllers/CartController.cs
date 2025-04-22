@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ECommerceWeb.Models;
-using ECommerceWeb.Helpers;
 using ECommerceWeb.Data;
+using ECommerceWeb.Helpers;
+using System.Collections.Generic;
+using System.Linq;
 
 public class CartController : Controller
 {
     private const string CartSessionKey = "Cart";
-    private readonly ApplicationDbContext _db; // Replace 'object' with your actual DbContext type  
+    private readonly ApplicationDbContext _db;
 
-    public CartController(ApplicationDbContext db) // Inject the DbContext via constructor  
+    public CartController(ApplicationDbContext db)
     {
         _db = db;
     }
@@ -21,7 +23,7 @@ public class CartController : Controller
 
     public IActionResult AddToCart(int id)
     {
-        var product = _db.Products.Find(id); // This will now work if 'Products' is a DbSet in your DbContext  
+        var product = _db.Products.FirstOrDefault(p => p.Id == id);
         if (product == null) return NotFound();
 
         var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSessionKey) ?? new List<CartItem>();
@@ -43,7 +45,7 @@ public class CartController : Controller
         }
 
         HttpContext.Session.SetObjectAsJson(CartSessionKey, cart);
-        return RedirectToAction("Index", "Cart");
+        return RedirectToAction("Index","Cart");
     }
 
     public IActionResult Remove(int id)

@@ -16,7 +16,9 @@
                     <h5 class="card-title">@product.Name</h5>
                     <p class="card-text">@product.Description</p>
                     <p class="text-primary fw-bold">₹@product.Price</p>
-                    <button class="btn btn-success">Add to Cart</button>
+                   
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-primary">Add to Cart</a>
+
                 </div>
             </div>
         </div>
