@@ -1,0 +1,23 @@
+﻿@model List<ECommerceWeb.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h2>Checkout</h2>
+
+<form asp-action="PlaceOrder" method="post">
+    <div class="form-group">
+        <label for="address">Shipping Address *</label>
+        <input type="text" class="form-control" id="address" name="address" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
+
+<!-- Display error if any -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}

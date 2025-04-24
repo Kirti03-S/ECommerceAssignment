@@ -21,7 +21,7 @@ namespace YourApp.Controllers
         public IActionResult Register() => View();
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(Customer customer)
+        public IActionResult Register(RegisterViewModel customer)
         {
             if (ModelState.IsValid)
             {
@@ -34,7 +34,7 @@ namespace YourApp.Controllers
                 }
 
                 // Hash password (use your own hash logic or plain for now)
-                string hash = customer.Password; // Ideally hash it
+                string hash = BCrypt.Net.BCrypt.HashPassword(customer.Password); // Ideally hash it
 
                 // ✅ Save new customer to DB with Role
                 _db.Customers.Add(new Customer
@@ -63,7 +63,6 @@ namespace YourApp.Controllers
         }
 
         [HttpPost]
-
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel customer, string? returnUrl = null)
         {
@@ -83,19 +82,27 @@ namespace YourApp.Controllers
         new Claim(ClaimTypes.Role, user.Role)
     };
 
-            // 2) Create identity and principal (this is the part you were missing!)
+            // 2) Create identity and principal
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity); // ← this must be declared before using
+            var principal = new ClaimsPrincipal(identity);
 
-            // 3) Sign in using cookie auth
+            // 3) Sign in using cookie authentication
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            // 4) Redirect to home or returnUrl
+            // 4) Redirect based on role
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            return RedirectToAction("Index", "Home");
+            if (user.Role == "Admin")
+            {
+                return RedirectToAction("Manage", "Product"); // Admin landing page
+            }
+            else
+            {
+                return RedirectToAction("Index", "Product"); // User landing page
+            }
         }
+
 
 
         [HttpPost]

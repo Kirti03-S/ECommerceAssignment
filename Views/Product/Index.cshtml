@@ -1,7 +1,27 @@
 ﻿@model IEnumerable<ECommerceWeb.Models.Product>
 
+
+@{
+    Layout = "_Layout";
+}
+
+
+
+
 @{
     ViewData["Title"] = "Product Listing";
+}
+
+
+@using System.Security.Claims
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="mb-4 d-flex justify-content-start gap-2">
+        <a class="btn btn-primary" asp-controller="Product" asp-action="Create">Create Product</a>
+        <a class="btn btn-secondary" asp-controller="Product" asp-action="Manage">Edit Products</a>
+        <a class="btn btn-danger" asp-controller="Product" asp-action="Manage">Delete Products</a>
+    </div>
 }
 
 <h2>Products</h2>
@@ -24,4 +44,6 @@
         </div>
     }
 </div>
+
+
 

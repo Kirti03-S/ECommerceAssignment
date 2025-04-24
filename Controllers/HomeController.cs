@@ -15,6 +15,17 @@ namespace ECommerceWeb.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    return RedirectToAction("Manage", "Product");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Product"); 
+                }
+            }
             return View();
         }
 

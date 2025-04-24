@@ -12,7 +12,7 @@
 }
 else
 {
-    <table class="table">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Product</th>
@@ -28,7 +28,15 @@ else
                 <tr>
                     <td>@item.ProductName</td>
                     <td>@item.Price.ToString("C")</td>
-                    <td>@item.Quantity</td>
+
+                    <!-- Quantity Update Form -->
+                    <td>
+                        <form asp-action="UpdateQuantity" method="post" class="d-flex">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm me-2" style="width: 80px;" />
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                    </td> 
                     <td>@((item.Price * item.Quantity).ToString("C"))</td>
                     <td>
                         <a asp-action="Remove" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm">Remove</a>

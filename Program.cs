@@ -82,6 +82,7 @@ app.UseRouting();
 
 // **VERY IMPORTANT**: authentication must come before authorization
 app.UseAuthentication();
+builder.Services.AddSession();
 app.UseSession();
 app.UseAuthorization();
 

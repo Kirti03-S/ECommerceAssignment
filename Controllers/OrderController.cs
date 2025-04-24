@@ -7,6 +7,8 @@ using ECommerceWeb.Helpers;
 using OrderInvoiceSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using OrderInvoiceSystem.Models;
+using ECommerceWeb.ViewModels;
+using System.Text.Json;
 
 [Authorize]
 public class OrderController : Controller
@@ -17,6 +19,7 @@ public class OrderController : Controller
     {
         _db = db;
     }
+
     public IActionResult MyOrders()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -29,36 +32,71 @@ public class OrderController : Controller
 
         return View(orders);
     }
-    public IActionResult PlaceOrder()
+
+
+
+    [HttpPost]
+    public async Task<IActionResult> PlaceOrder(string address)
     {
         var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
+
+        // Check if cart is empty (basic validation)
         if (cart == null || !cart.Any())
         {
-            return RedirectToAction("Index", "Product");
+            TempData["Error"] = "Your cart is empty.";
+            return RedirectToAction("Index", "Cart");
         }
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        // Only validate address if the form was submitted
+        if (Request.Method == "POST" && string.IsNullOrWhiteSpace(address))
+        {
+            TempData["Error"] = "Please provide a valid shipping address.";
+            TempData["Cart"] = JsonSerializer.Serialize(cart);
+            return RedirectToAction("Checkout");
+        }
 
+        // Proceed with order placement if validation passes
         var order = new Order
         {
-            UserId = userId,
+            Address = address,
+            OrderDate = DateTime.Now,
             Items = cart.Select(c => new OrderItem
             {
-                ProductId = c.ProductId, // Fixed: Use ProductId directly from CartItem
+                ProductId = c.ProductId,
                 Quantity = c.Quantity,
-                Price = c.Price 
-            }).ToList()
+                Price = c.Price
+            }).ToList(),
+            TotalAmount = cart.Sum(x => x.Price * x.Quantity),
+            UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
         };
 
         _db.Orders.Add(order);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
 
         HttpContext.Session.Remove("Cart");
-        return RedirectToAction("MyOrders", "Order");
-
-        TempData["success"] = "Order placed successfully!";
-
-        
-        return RedirectToAction("Index", "Home");
+        TempData["Success"] = "Order placed successfully!";
+        return RedirectToAction("MyOrders");
     }
+
+    public IActionResult Checkout()
+    {
+        var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
+
+        // If cart is empty, redirect to cart page
+        if (cart == null || !cart.Any())
+        {
+            TempData["Error"] = "Your cart is empty.";
+            return RedirectToAction("Index", "Cart");
+        }
+
+        // Restore cart from TempData if redirected back from PlaceOrder
+        if (TempData["Cart"] != null)
+        {
+            cart = JsonSerializer.Deserialize<List<CartItem>>(TempData["Cart"].ToString());
+            HttpContext.Session.SetObjectAsJson("Cart", cart);
+        }
+
+        return View(cart);
+    }
+
 }

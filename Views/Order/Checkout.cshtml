@@ -1,0 +1,56 @@
+﻿@model List<ECommerceWeb.Models.CartItem>
+
+<h2>Checkout</h2>
+
+
+
+<form asp-action="PlaceOrder" method="post" id="checkoutForm">
+    <div class="form-group">
+        <label for="address">Shipping Address *</label>
+        <input type="text" class="form-control" id="address" name="address" required>
+        <span class="text-danger" id="addressError"></span>
+    </div>
+    
+
+
+@section Scripts {
+    <script>
+        document.getElementById("checkoutForm").addEventListener("submit", function(e) {
+            const addressInput = document.getElementById("address");
+            const addressError = document.getElementById("addressError");
+
+            if (!addressInput.value.trim()) {
+                e.preventDefault(); // Stop form submission
+                addressError.textContent = "Please enter a shipping address.";
+            } else {
+                addressError.textContent = ""; // Clear error if valid
+            }
+        });
+    </script>
+}
+
+    <h4>Order Summary</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@((item.Price * item.Quantity).ToString("C"))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
