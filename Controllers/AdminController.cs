@@ -11,6 +11,26 @@ namespace ECommerceWeb.Controllers
         {
             _db = db;
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult UpdateStock(int productId, int currentStock, int stockLimit)
+        {
+            var product = _db.Products.Find(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.CurrentStock = currentStock;
+            product.StockLimit = stockLimit;
+            _db.SaveChanges();
+
+            TempData["Success"] = "Stock updated successfully!";
+            return RedirectToAction("Manage");
+        }
+
+
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {

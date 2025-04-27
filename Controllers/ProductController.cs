@@ -97,6 +97,24 @@ namespace ECommerceWeb.Controllers
             return View(products);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateStock(int productId, int currentStock, int stockLimit)
+        {
+            var product = await _db.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.CurrentStock = currentStock;
+            product.StockLimit = stockLimit;
+            await _db.SaveChangesAsync();
+
+            TempData["Success"] = "Stock updated successfully!";
+            return RedirectToAction("Manage");
+        }
     }
 }
 
