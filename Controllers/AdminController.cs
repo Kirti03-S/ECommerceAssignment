@@ -23,7 +23,7 @@ namespace ECommerceWeb.Controllers
             }
 
             product.CurrentStock = currentStock;
-            product.StockLimit = stockLimit;
+            
             _db.SaveChanges();
 
             TempData["Success"] = "Stock updated successfully!";

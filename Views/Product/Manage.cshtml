@@ -3,8 +3,6 @@
     ViewData["Title"] = "Manage Products";
 }
 
-@*<partial name="_AdminNav" />*@
-
 <h2>Manage Products</h2>
 
 <a asp-action="Create" class="btn btn-success mb-3">+ Create New Product</a>
@@ -12,10 +10,11 @@
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>
-            <th>Name</th>
-            <th>Description</th>
+            <th>Product</th>
             <th>Price</th>
-            <th>Image</th>
+            <th>Current Stock</th>
+            <th>Stock Limit</th>
+            <th>Available</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -23,18 +22,35 @@
         @foreach (var product in Model)
         {
             <tr>
-                <td>@product.Name</td>
-                <td>@product.Description</td>
+                <td>
+                    <img src="@product.ImageUrl" width="50" />
+                    @product.Name
+                </td>
                 <td>₹@product.Price</td>
+            
+                <form asp-controller="Product" asp-action="UpdateStock" method="post">
+                        @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@product.Id" />
+
+                <td>@product.Name</td>
                 <td>
-                    <img src="@product.ImageUrl" width="80" />
+                    <input type="number" name="currentStock" value="@product.CurrentStock"
+                           class="form-control form-control-sm" min="0" />
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger btn-sm">Delete</a>
-                </td>
+                
+                
+                   
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button type="submit" class="btn btn-primary">Update Stock</button>
+                        <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </td>
+
+
+                </form>
             </tr>
         }
     </tbody>
 </table>
-

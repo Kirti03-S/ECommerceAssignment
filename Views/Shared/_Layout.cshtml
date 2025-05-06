@@ -2,123 +2,155 @@
 @{
     var Role = User.FindFirst(ClaimTypes.Role)?.Value;
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - ECommerceWeb</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ECommerceWeb.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"/>
+
+    <!-- Toastr -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+
+    <style>
+        .navbar-nav .nav-link:hover {
+            color: #0d6efd !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link.active {
+            border-bottom: 2px solid #0d6efd;
+        }
+
+        .cart-badge {
+            
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+            vertical-align: top;
+            margin-left: 4px;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <header>
-
-
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ECommerceWeb</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-store"></i> ECommerceWeb
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
 
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>*@
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            @* Show admin-only link *@
                             if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Product" asp-action="Manage">Manage Products</a>
+                                    <a class="nav-link" asp-controller="Product" asp-action="Manage">
+                                        <i class="fas fa-cogs"></i> Manage Products
+                                    </a>
                                 </li>
                             }
 
-                            
-
-                            @*<li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                </form>
-                            </li>*@
-
-                            @if (User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
+                            @if (!User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Cart" asp-action="Index">Cart</a>
+                                    <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                                        <i class="fas fa-shopping-cart"></i> Cart
+                                        <span class="cart-badge"></span> @* Replace with dynamic value *@
+                                    </a>
                                 </li>
-
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Order" asp-action="MyOrders">My Orders</a>
+                                    <a class="nav-link" asp-controller="Order" asp-action="MyOrders">
+                                        <i class="fas fa-box"></i> My Orders
+                                    </a>
                                 </li>
                             }
-
-
-
                         }
-                        <!-- Right-aligned section -->
-                        <ul class="navbar-nav ms-auto">
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity.IsAuthenticated)
+                        {
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <li class="nav-item">
-                                    <span class="nav-link text-dark">
-                                        Hello, @User.Identity.Name @((Role == "Admin") ? $"({Role})" : "")
-                                    </span>
-                                </li>
-                                <li class="nav-item">
-                                    <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                        <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                    </form>
+                                    <a class="nav-link text-dark" asp-controller="Profile" asp-action="Index">
+                                        <i class="fas fa-user-circle"></i> Hello, @User.Identity.Name
+                                    </a>
                                 </li>
                             }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
-                                </li>
-                            }
-                        </ul>
 
-
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm ms-2">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">
+                                    <i class="fas fa-user-plus"></i> Register
+                                </a>
+                            </li>
+                        }
                     </ul>
-
-
-
-                    
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container flex-grow-1">
         <main role="main" class="pb-3">
             <partial name="_Notification" />
             @RenderBody()
         </main>
-
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted mt-auto">
         <div class="container">
             &copy; 2025 - ECommerceWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+    

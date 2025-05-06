@@ -17,5 +17,11 @@ namespace ECommerceWeb.ViewModels
         [DataType(DataType.Password)]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
         public string Password { get; set; } = null!;
+
+        [Compare("Password")]
+        [Required(ErrorMessage = "Confirm your password")]
+        public string ConfirmPassword { get; set; }
+
+
     }
 }

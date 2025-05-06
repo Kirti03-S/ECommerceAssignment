@@ -4,10 +4,7 @@ using System.Security.Claims;
 using ECommerceWeb.Models;
 using ECommerceWeb.Data;
 using ECommerceWeb.Helpers;
-using OrderInvoiceSystem.Models;
 using Microsoft.EntityFrameworkCore;
-using OrderInvoiceSystem.Models;
-using ECommerceWeb.ViewModels;
 using System.Text.Json;
 
 [Authorize]
@@ -34,7 +31,6 @@ public class OrderController : Controller
     }
 
 
-
     [HttpPost]
     public async Task<IActionResult> PlaceOrder(string address)
     {
@@ -54,6 +50,8 @@ public class OrderController : Controller
             TempData["Cart"] = JsonSerializer.Serialize(cart);
             return RedirectToAction("Checkout");
         }
+
+
 
         // Proceed with order placement if validation passes
         var order = new Order
@@ -83,6 +81,7 @@ public class OrderController : Controller
         var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
 
         // If cart is empty, redirect to cart page
+
         if (cart == null || !cart.Any())
         {
             TempData["Error"] = "Your cart is empty.";
@@ -90,6 +89,7 @@ public class OrderController : Controller
         }
 
         // Restore cart from TempData if redirected back from PlaceOrder
+
         if (TempData["Cart"] != null)
         {
             cart = JsonSerializer.Deserialize<List<CartItem>>(TempData["Cart"].ToString());

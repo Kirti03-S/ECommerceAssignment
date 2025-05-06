@@ -6,11 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using OrderInvoiceSystem.Models;
 using System;
 using System.Security.Claims;
-using ECommerceWeb.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ECommerceWeb.ViewModels;
 
-namespace YourApp.Controllers
+namespace ECommerceWeb.Controllers
 {
     public class AccountController : Controller
     {
@@ -33,18 +31,19 @@ namespace YourApp.Controllers
                     return View(customer);
                 }
 
-                // Hash password (use your own hash logic or plain for now)
-                string hash = BCrypt.Net.BCrypt.HashPassword(customer.Password); // Ideally hash it
+                // Hash password 
+                string hash = BCrypt.Net.BCrypt.HashPassword(customer.Password); // hash it
 
-                // ✅ Save new customer to DB with Role
+                // Save new customer to DB with Role
                 _db.Customers.Add(new Customer
                 {
                     CustomerName = customer.CustomerName,
                     Email = customer.Email,
                     Password = hash,
-                    Role = "User" // Change to "Admin" manually if needed
+                    Role = "User" 
                 });
 
+              
                 _db.SaveChanges();
 
                 TempData["success"] = "Registration successful! Please login.";
@@ -56,7 +55,7 @@ namespace YourApp.Controllers
 
 
         [HttpGet]
-        public IActionResult Login(string? returnUrl = null)
+        public IActionResult Login(string? returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -73,23 +72,23 @@ namespace YourApp.Controllers
                 return View();
             }
 
-            // 1) Create the user's claims
+            // Create the user's claims
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.CustomerName),
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, user.Role)
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.CustomerName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
 
-            // 2) Create identity and principal
+            // Create identity and principal
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
-            // 3) Sign in using cookie authentication
+            // Sign in using cookie authentication
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            // 4) Redirect based on role
+            // Redirect based on role
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
@@ -102,9 +101,7 @@ namespace YourApp.Controllers
                 return RedirectToAction("Index", "Product"); // User landing page
             }
         }
-
-
-
+        
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

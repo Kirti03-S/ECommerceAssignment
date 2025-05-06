@@ -5,6 +5,7 @@ using ECommerceWeb.Helpers;
 
 namespace ECommerceWeb.Helpers
 {
+    // extension methods
     public static class SessionExtensions
     {
         public static void SetObjectAsJson(this ISession session, string key, object value)

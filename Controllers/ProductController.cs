@@ -64,17 +64,29 @@ namespace ECommerceWeb.Controllers
         // POST: /Product/Edit/5
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Product product)
+        public async Task<IActionResult> Edit(Product updatedProduct)
         {
             if (!ModelState.IsValid)
             {
-                return View(product);
+                return View(updatedProduct);
             }
 
-            _db.Products.Update(product);
+            var existingProduct = await _db.Products.FindAsync(updatedProduct.Id);
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            // Only update allowed fields — leave CurrentStock as-is unless explicitly changed
+            existingProduct.Name = updatedProduct.Name;
+            existingProduct.Description = updatedProduct.Description;
+            existingProduct.Price = updatedProduct.Price;
+            // Do not update CurrentStock unless admin is specifically changing it
+
             await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+
 
         // GET: /Product/Delete/5
         [Authorize(Roles = "Admin")]
@@ -97,24 +109,28 @@ namespace ECommerceWeb.Controllers
             return View(products);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateStock(int productId, int currentStock, int stockLimit)
-        {
-            var product = await _db.Products.FindAsync(productId);
-            if (product == null)
-            {
-                return NotFound();
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> UpdateStock(int productId, int currentStock, int stockLimit)
+        //{
+        //    var existingProduct = await _db.Products.FindAsync(productId);
+        //    if (existingProduct == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            product.CurrentStock = currentStock;
-            product.StockLimit = stockLimit;
-            await _db.SaveChangesAsync();
+        //    //// Only update allowed fields (exclude CurrentStock unless intended)
+        //    //existingProduct.Name = ProductName;
+        //    //existingProduct.Description = product.Description;
+        //    //existingProduct.Price = product.Price;
 
-            TempData["Success"] = "Stock updated successfully!";
-            return RedirectToAction("Manage");
-        }
+        //    await _db.SaveChangesAsync();
+
+
+        //    TempData["Success"] = "Stock updated successfully!";
+        //    return RedirectToAction("Manage");
+        //}
     }
 }
 
